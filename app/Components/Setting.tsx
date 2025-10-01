@@ -1,7 +1,8 @@
+"use client";
+
 import React, { useContext, useState, useRef } from "react";
 import SettingsContext from "../../context/SettingContext";
-import SettingsIcon from "@mui/icons-material/Settings";
-import { Popper, Box } from "@mui/material";
+import { Popup, Button } from "pixel-retroui";
 
 const musicOptions = [
   { label: "None", value: "None" },
@@ -12,121 +13,121 @@ const musicOptions = [
 
 const Setting = () => {
   const settingsInfo = useContext(SettingsContext)!;
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
   const [tempPomodoro, setTempPomodoro] = useState(settingsInfo.pomodoroTime);
   const [tempBreak, setTempBreak] = useState(settingsInfo.breakTime);
   const [tempmusic, settempMusic] = useState(
     typeof settingsInfo.music === "string" ? settingsInfo.music : "None"
   );
   const [musicOpen, setMusicOpen] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
-  };
+  const openPopup = () => setIsPopupOpen(true);
+  const closePopup = () => setIsPopupOpen(false);
 
   const handleSave = () => {
     settingsInfo.setPomodoroTime(tempPomodoro);
     settingsInfo.setBreakTime(tempBreak);
     if (settingsInfo.setMusic) settingsInfo.setMusic(tempmusic);
-    setAnchorEl(null); // Close popper
+    closePopup();
   };
 
-  const open = Boolean(anchorEl);
-  const id = open ? "settings-popper" : undefined;
-
   return (
-    <>
-      <button aria-describedby={id} onClick={handleClick}>
-        <SettingsIcon
-          fontSize="large"
-          sx={{
-            width: 40,
-            height: 40,
-            cursor: "pointer",
-          }}
-        />
-      </button>
+    <div className="flex justify-center mt-6">
+      {/* Settings Button */}
+      <Button
+        bg="#D6DAC8"
+        textColor="black"
+        borderColor="black"
+        onClick={openPopup}
+      >
+        Settings
+      </Button>
 
-      <Popper id={id} open={open} anchorEl={anchorEl} placement="bottom-start">
-        <Box
-          sx={{
-            p: 2,
-            bgcolor: "transparent",
-            minWidth: 300,
-            maxWidth: 400,
-          }}
-        >
-          <div className="flex flex-col space-y-4 bg-black/60 p-4 rounded-xl backdrop-blur-md border border-gray-500 w-full">
-            <label className="text-sm font-semibold text-white">
-              Pomodoro Time (min):
-              <input
-                type="number"
-                value={tempPomodoro}
-                min={1}
-                max={120}
-                onChange={(e) => setTempPomodoro(Number(e.target.value))}
-                className="mt-1 w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-transparent text-white"
-              />
+      {/* Settings Popup */}
+      <Popup isOpen={isPopupOpen} onClose={closePopup}>
+        <div className="flex flex-col space-y-4 bg-[#758581] p-6 rounded-xl backdrop-blur-md border border-gray-500 w-80">
+          <h2 className="text-lg font-bold text-white">Settings</h2>
+
+          <label className="text-sm font-semibold text-white">
+            Pomodoro Time (min):
+            <input
+              type="number"
+              value={tempPomodoro}
+              min={1}
+              max={120}
+              onChange={(e) => setTempPomodoro(Number(e.target.value))}
+              className="mt-1 w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-transparent text-white"
+            />
+          </label>
+
+          <label className="text-sm font-semibold text-white">
+            Break Time (min):
+            <input
+              type="number"
+              value={tempBreak}
+              min={1}
+              max={120}
+              onChange={(e) => setTempBreak(Number(e.target.value))}
+              className="mt-1 w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-transparent text-white"
+            />
+          </label>
+
+          <div className="relative">
+            <label className="text-sm font-semibold text-white block mb-1">
+              Music
             </label>
-
-            <label className="text-sm font-semibold text-white">
-              Break Time (min):
-              <input
-                type="number"
-                value={tempBreak}
-                min={1}
-                max={120}
-                onChange={(e) => setTempBreak(Number(e.target.value))}
-                className="mt-1 w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-transparent text-white"
-              />
-            </label>
-
-            <div className="relative">
-              <label className="text-sm font-semibold text-white block mb-1">
-                Music
-              </label>
-              <button
-                onClick={() => setMusicOpen(!musicOpen)}
-                className="w-full p-2 bg-transparent border border-gray-300 rounded-md shadow-sm text-white flex justify-between items-center"
-              >
-                {musicOptions.find((opt) => opt.value === tempmusic)?.label}
-
-                <span className="ml-2">▾</span>
-              </button>
-
-              {musicOpen && (
-                <ul className="absolute z-20 mt-1 w-full bg-black bg-opacity-70 border border-white rounded-md shadow-lg backdrop-blur">
-                  {musicOptions.map((option) => (
-                    <li
-                      key={option.value}
-                      onClick={() => {
-                        settempMusic(option.value);
-                        setMusicOpen(false);
-                      }}
-                      className={`px-4 py-2 cursor-pointer border-b border-white last:border-none hover:bg-white hover:text-black text-white ${
-                        tempmusic === option.value
-                          ? " text-black"
-                          : "bg-transparent"
-                      }`}
-                    >
-                      {option.label}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
             <button
+              onClick={() => setMusicOpen(!musicOpen)}
+              className="w-full p-2 bg-transparent border border-gray-300 rounded-md shadow-sm text-white flex justify-between items-center"
+            >
+              {musicOptions.find((opt) => opt.value === tempmusic)?.label}
+              <span className="ml-2">▾</span>
+            </button>
+
+            {musicOpen && (
+              <ul className="absolute z-20 mt-1 w-full bg-[#9CAFAA]  rounded-md shadow-lg backdrop-blur">
+                {musicOptions.map((option) => (
+                  <li
+                    key={option.value}
+                    onClick={() => {
+                      settempMusic(option.value);
+                      setMusicOpen(false);
+                    }}
+                    className={`px-4 py-2 cursor-pointer border-b border-white last:border-none hover:bg-[#D6A99D] hover:text-black text-white ${
+                      tempmusic === option.value
+                        ? "text-[#D6A99D] bg-[#D6A99D]"
+                        : ""
+                    }`}
+                  >
+                    {option.label}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <div className="flex gap-2">
+            <Button
+              bg="#D6A99D"
+              textColor="black"
+              borderColor="black"
               onClick={handleSave}
-              className="bg-transparent border-2 hover:bg-gray-300 text-white font-serif py-1 px-4 rounded-full transition-colors duration-300"
             >
               Save Settings
-            </button>
+            </Button>
+            <Button
+              bg="#D6A99D"
+              textColor="black"
+              borderColor="black"
+              onClick={closePopup}
+            >
+              Cancel
+            </Button>
           </div>
-        </Box>
-      </Popper>
-    </>
+        </div>
+      </Popup>
+    </div>
   );
 };
 

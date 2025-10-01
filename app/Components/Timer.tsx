@@ -8,6 +8,7 @@ import Break from "./Break";
 import Pomodoro from "./Pomodoro";
 import SettingsContext from "../../context/SettingContext";
 import Setting from "./Setting";
+import { Card } from "pixel-retroui";
 
 function Timer() {
   // State variables
@@ -90,44 +91,44 @@ function Timer() {
   ).padStart(2, "0")}`;
 
   return (
-    <div className="flex flex-col items-center justify-center ">
-      <audio ref={audioRef} preload="auto" className="hidden" />
+    <Card bg="#9CAFAA" className="p-4 items-center flex flex-col">
+      <div className="flex flex-col items-center justify-center ">
+        <audio ref={audioRef} preload="auto" className="hidden" />
 
-      {/* Bell Sound Audio */}
-      <audio
-        ref={bellRef}
-        src="/mixkit-notification-bell-592.wav"
-        preload="auto"
-        className="hidden"
-      />
-      <div className="mt-4">
-        <p className=" font-serif text-white text-4xl ring-2 ring-gray-500 rounded-full px-4 py-2">
-          Current Mode: {mode.charAt(0).toUpperCase() + mode.slice(1)}
+        {/* Bell Sound Audio */}
+        <audio
+          ref={bellRef}
+          src="/mixkit-notification-bell-592.wav"
+          preload="auto"
+          className="hidden"
+        />
+
+        <div className="text-center mb-4"></div>
+        <div className="flex space-x-4 mt-4 ">
+          <Break
+            onClick={() => {
+              setIsPaused(true);
+              isPausedRef.current = true;
+              setMode("break");
+              modeRef.current = "break";
+              setSeconds(settingsInfo.breakTime * 60);
+              secondsRef.current = settingsInfo.breakTime * 60;
+            }}
+          />
+          <Pomodoro
+            onClick={() => {
+              setIsPaused(true);
+              isPausedRef.current = true;
+              setMode("pomodoro");
+              modeRef.current = "pomodoro";
+              setSeconds(settingsInfo.pomodoroTime * 60);
+              secondsRef.current = settingsInfo.pomodoroTime * 60;
+            }}
+          />
+        </div>
+        <p className=" text-9xl font-stretch-200% font-extrabold   ">
+          {formattedTime}
         </p>
-      </div>
-      <div className="text-center mb-4"></div>
-      <div className="flex space-x-4 mt-4 ">
-        <Break
-          onClick={() => {
-            setIsPaused(true);
-            isPausedRef.current = true;
-            setMode("break");
-            modeRef.current = "break";
-            setSeconds(settingsInfo.breakTime * 60);
-            secondsRef.current = settingsInfo.breakTime * 60;
-          }}
-        />
-        <Pomodoro
-          onClick={() => {
-            setIsPaused(true);
-            isPausedRef.current = true;
-            setMode("pomodoro");
-            modeRef.current = "pomodoro";
-            setSeconds(settingsInfo.pomodoroTime * 60);
-            secondsRef.current = settingsInfo.pomodoroTime * 60;
-          }}
-        />
-
         {isPaused ? (
           <PlayButton
             onClick={() => {
@@ -151,10 +152,7 @@ function Timer() {
           </>
         )}
       </div>
-      <p className="font-serif text-9xl font-stretch-200% font-extrabold text-amber-50  ">
-        {formattedTime}
-      </p>
-    </div>
+    </Card>
   );
 }
 

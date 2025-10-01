@@ -1,5 +1,6 @@
 // app/layout.tsx
 import "./globals.css";
+import "@/lib/pixel-retroui-setup.js";
 import type { Metadata } from "next";
 import { AuthProvider } from "@/context/AuthContext";
 

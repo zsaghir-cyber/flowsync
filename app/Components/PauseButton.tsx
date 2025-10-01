@@ -1,13 +1,19 @@
 import React from "react";
-function PauseButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+import { Button } from "pixel-retroui";
+
+function Pause(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button
-      className="bg-transparent border-2 hover:bg-gray-300 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110  text-white font-serif py-2 px-4 rounded-full "
+    <Button
       {...props}
+      bg="#D6A99D"
+      textColor="#30210b"
+      borderColor="#30210b"
+      shadow="#30210b"
+      className="transition-transform duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 w-full py-2"
     >
       Pause
-    </button>
+    </Button>
   );
 }
 
-export default PauseButton;
+export default Pause;

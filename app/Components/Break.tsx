@@ -1,14 +1,19 @@
 import React from "react";
+import { Button } from "pixel-retroui";
 
-const Break = (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => {
+function Break(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button
-      className="bg-transparent border-2 hover:bg-gray-300 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110  text-white font-serif py-2 px-4 rounded-full "
+    <Button
       {...props}
+      bg="#D6DAC8"
+      textColor="#30210b"
+      borderColor="#30210b"
+      shadow="#30210b"
+      className="transition-transform duration-300 ease-in-out hover:-translate-y-1 hover:scale-110"
     >
-      Break
-    </button>
+      BREAK
+    </Button>
   );
-};
+}
 
 export default Break;

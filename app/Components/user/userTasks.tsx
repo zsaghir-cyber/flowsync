@@ -1,37 +1,41 @@
-"use client";
 import React, { useState, useRef, useEffect, use } from "react";
-import {
-  DropdownMenuContent,
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "pixel-retroui";
-import {
-  Box,
-  Popper,
-  Paper,
-  Typography,
-  IconButton,
-  TextField,
-} from "@mui/material";
+
+import { Typography, IconButton, Box, TextField } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  getDoc,
+  addDoc,
+  onSnapshot,
+  collection,
+  deleteDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { Button, Input } from "pixel-retroui";
+import { blue } from "@mui/material/colors";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  Input,
+  Button,
+} from "pixel-retroui";
+type Task = {
+  id: string;
+  title: string;
+  completed: boolean;
+};
 
-const Tasks = () => {
+const UserTasks = () => {
   const { user } = useAuth();
+
+  const [taskList, setTaskList] = useState<Task[]>([]);
   const [taskInput, setTaskInput] = useState("");
-
-  const [taskList, setTaskList] = useState<
-    { completed: boolean; id: number; title: string }[]
-  >([]);
-
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleToggle = (event: React.MouseEvent<HTMLElement>) => {
@@ -41,31 +45,43 @@ const Tasks = () => {
   const open = Boolean(anchorEl);
   const id = open ? "task-popper" : undefined;
 
-  const addTask = () => {
-    if (taskInput.trim() !== "") {
-      const newTask = {
-        completed: false,
-        id: Date.now(),
-        title: taskInput,
-      };
-      setTaskList((prev) => [...prev, newTask]);
+  useEffect(() => {
+    if (!user) return;
+    const taskref = collection(db, "users", user.uid, "tasklist");
+    const unsub = onSnapshot(taskref, (querySnapshot) => {
+      const tasks: Task[] = [];
+      querySnapshot.forEach((doc) => {
+        tasks.push({ id: doc.id, ...(doc.data() as Omit<Task, "id">) });
+      });
+      console.log("tasklist", tasks);
+      setTaskList(tasks);
+    });
+    return () => unsub();
+  }, [user]);
+  const addTask = async () => {
+    if (taskInput && taskInput !== "") {
+      const title = taskInput;
+      if (!user) return;
+      const taskRef = collection(db, "users", user.uid, "tasklist");
+      await addDoc(taskRef, { title, completed: false });
       setTaskInput("");
     }
   };
-  const deleteTask = (taskId: number) => {
-    const newList = taskList.filter((task) => task.id !== taskId);
-    setTaskList(newList);
+  const deleteTask = async (id: string) => {
+    if (!user) return;
+    const taskRef = doc(db, "users", user.uid, "tasklist", id);
+    await deleteDoc(taskRef);
   };
-  const completedTask = (taskId: number) => {
-    const updatedTaskList = taskList.map((task) =>
-      task.id === taskId ? { ...task, completed: !task.completed } : task
-    );
-    setTaskList(updatedTaskList);
+
+  const completedTask = async (id: string, completed: boolean) => {
+    if (!user) return;
+    const taskRef = doc(db, "users", user.uid, "tasklist", id);
+    await updateDoc(taskRef, { completed });
   };
 
   return (
     <Box className="flex flex-col items-center mt-4">
-      <div className="flex items-center gap-2">
+      <div className="flex  items-center gap-2">
         <Input
           bg="white"
           textColor="black"
@@ -113,19 +129,18 @@ const Tasks = () => {
                     • {task.title}
                   </span>
                   <div className="flex gap-2">
-                    <IconButton
-                      onClick={() => completedTask(task.id)}
-                      size="small"
-                      sx={{ color: "white" }}
+                    <button
+                      onClick={() => completedTask(task.id, !task.completed)}
+                      className="p-1 hover:scale-110 transition"
                     >
                       <CheckCircleOutlineIcon
                         fontSize="small"
-                        sx={{
+                        style={{
                           color: task.completed ? "lightgreen" : "gray",
                           cursor: "pointer",
                         }}
                       />
-                    </IconButton>
+                    </button>
 
                     <button
                       onClick={() => deleteTask(task.id)}
@@ -147,4 +162,4 @@ const Tasks = () => {
   );
 };
 
-export default Tasks;
+export default UserTasks;
