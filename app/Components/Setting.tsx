@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useState, useRef } from "react";
+import React, { useContext, useState } from "react";
 import SettingsContext from "../../context/SettingContext";
 import { Popup, Button } from "pixel-retroui";
 
@@ -18,7 +18,7 @@ const Setting = () => {
   const [tempPomodoro, setTempPomodoro] = useState(settingsInfo.pomodoroTime);
   const [tempBreak, setTempBreak] = useState(settingsInfo.breakTime);
   const [tempmusic, settempMusic] = useState(
-    typeof settingsInfo.music === "string" ? settingsInfo.music : "None"
+    typeof settingsInfo.music === "string" ? settingsInfo.music : "None",
   );
   const [musicOpen, setMusicOpen] = useState(false);
 

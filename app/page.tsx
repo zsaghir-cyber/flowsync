@@ -1,19 +1,19 @@
 "use client";
 import React, { useState } from "react";
 import SettingsContext from "../context/SettingContext";
-import Timer from "./Components/Timer";
-
+// REMOVED: Timer import (You are using TimerWrapper instead)
 import Tasks from "./Components/Tasks";
 import UserProfile from "./Components/user/UserProfile";
 import Setting from "./Components/Setting";
 import UserTasks from "./Components/user/userTasks";
 import { useAuth } from "@/context/AuthContext";
 import TimerWrapper from "./Timer/page";
+
 export default function Page() {
   const [pomodoroTime, setPomodoroTime] = useState(25);
   const [breakTime, setBreakTime] = useState(5);
   const [music, setMusic] = useState("None");
-  const [userinfo, setuserinfo] = useState(new Map());
+  // REMOVED: userinfo and setuserinfo (defined but never used)
   const { user } = useAuth();
 
   return (
@@ -28,8 +28,7 @@ export default function Page() {
       }}
     >
       {/* Navbar */}
-
-      <header className="w-full px-6 py-4 flex items-center justify-end bg-[#D6DAC8] backdrop-blur-md  sticky top-0 z-50">
+      <header className="w-full px-6 py-4 flex items-center justify-end bg-[#D6DAC8] backdrop-blur-md sticky top-0 z-50">
         <div className="flex gap-4 items-center">
           <UserProfile />
           <Setting />

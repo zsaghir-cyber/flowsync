@@ -7,11 +7,10 @@ import PauseButton from "./PauseButton";
 import Break from "./Break";
 import Pomodoro from "./Pomodoro";
 import SettingsContext from "../../context/SettingContext";
-import Setting from "./Setting";
+// REMOVED: import Setting from "./Setting"; (Not used in this file)
 import { Card } from "pixel-retroui";
 
 function Timer() {
-  // State variables
   const settingsInfo = useContext(SettingsContext)!;
   const [seconds, setSeconds] = useState(25);
   const [isPaused, setIsPaused] = useState(true);
@@ -20,13 +19,16 @@ function Timer() {
   const isPausedRef = useRef(isPaused);
   const modeRef = useRef(mode);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [music, setMusic] = useState("None");
+
+  // REMOVED: const [music, setMusic] = useState("None"); (Unused)
+
   const bellRef = useRef<HTMLAudioElement>(null);
 
   function tick() {
     secondsRef.current--;
     setSeconds(secondsRef.current);
   }
+
   function handleMusicChange() {
     if (
       audioRef.current &&
@@ -41,13 +43,14 @@ function Timer() {
         .catch((e) => console.warn("Audio play failed:", e));
     }
   }
+
   useEffect(() => {
     function switchMode() {
       const newMode = modeRef.current === "pomodoro" ? "break" : "pomodoro";
       const newSeconds =
         newMode === "pomodoro"
-          ? settingsInfo.pomodoroTime * 60 // Convert minutes to seconds
-          : settingsInfo.breakTime * 60; // Convert minutes to seconds
+          ? settingsInfo.pomodoroTime * 60
+          : settingsInfo.breakTime * 60;
 
       isPausedRef.current = true;
       setIsPaused(true);
@@ -59,15 +62,15 @@ function Timer() {
       }
 
       setMode(newMode);
-
       modeRef.current = newMode;
       setSeconds(newSeconds);
       secondsRef.current = newSeconds;
     }
+
     if (modeRef.current === "pomodoro") {
-      secondsRef.current = settingsInfo.pomodoroTime * 60; // Convert minutes to seconds
+      secondsRef.current = settingsInfo.pomodoroTime * 60;
     } else {
-      secondsRef.current = settingsInfo.breakTime * 60; // Convert minutes to seconds
+      secondsRef.current = settingsInfo.breakTime * 60;
     }
     setSeconds(secondsRef.current);
 
@@ -87,7 +90,7 @@ function Timer() {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
   const formattedTime = `${String(minutes).padStart(2, "0")}:${String(
-    remainingSeconds
+    remainingSeconds,
   ).padStart(2, "0")}`;
 
   return (
@@ -95,7 +98,6 @@ function Timer() {
       <div className="flex flex-col items-center justify-center ">
         <audio ref={audioRef} preload="auto" className="hidden" />
 
-        {/* Bell Sound Audio */}
         <audio
           ref={bellRef}
           src="/mixkit-notification-bell-592.wav"
@@ -103,7 +105,6 @@ function Timer() {
           className="hidden"
         />
 
-        <div className="text-center mb-4"></div>
         <div className="flex space-x-4 mt-4 ">
           <Break
             onClick={() => {
@@ -126,7 +127,7 @@ function Timer() {
             }}
           />
         </div>
-        <p className=" text-9xl font-stretch-200% font-extrabold   ">
+        <p className="text-9xl font-stretch-200% font-extrabold">
           {formattedTime}
         </p>
         {isPaused ? (
@@ -138,18 +139,16 @@ function Timer() {
             }}
           />
         ) : (
-          <>
-            <PauseButton
-              onClick={() => {
-                setIsPaused(true);
-                isPausedRef.current = true;
-                if (audioRef.current) {
-                  audioRef.current.pause();
-                  audioRef.current.currentTime = 0; // stop and reset
-                }
-              }}
-            />
-          </>
+          <PauseButton
+            onClick={() => {
+              setIsPaused(true);
+              isPausedRef.current = true;
+              if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current.currentTime = 0;
+              }
+            }}
+          />
         )}
       </div>
     </Card>

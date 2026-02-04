@@ -1,45 +1,24 @@
 "use client";
-import React, { useState, useRef, useEffect, use } from "react";
+import React, { useState } from "react";
 import {
   DropdownMenuContent,
   DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
+  Button,
+  Input,
 } from "pixel-retroui";
-import {
-  Box,
-  Popper,
-  Paper,
-  Typography,
-  IconButton,
-  TextField,
-} from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { useAuth } from "@/context/AuthContext";
-import { Button, Input } from "pixel-retroui";
+
+// REMOVED: import { useAuth } from "@/context/AuthContext";
+// (If you leave the import but don't use the hook, Next.js will error)
 
 const Tasks = () => {
-  const { user } = useAuth();
   const [taskInput, setTaskInput] = useState("");
-
   const [taskList, setTaskList] = useState<
     { completed: boolean; id: number; title: string }[]
   >([]);
-
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-  const handleToggle = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
-  };
-
-  const open = Boolean(anchorEl);
-  const id = open ? "task-popper" : undefined;
 
   const addTask = () => {
     if (taskInput.trim() !== "") {
@@ -52,10 +31,12 @@ const Tasks = () => {
       setTaskInput("");
     }
   };
+
   const deleteTask = (taskId: number) => {
     const newList = taskList.filter((task) => task.id !== taskId);
     setTaskList(newList);
   };
+
   const completedTask = (taskId: number) => {
     const updatedTaskList = taskList.map((task) =>
       task.id === taskId ? { ...task, completed: !task.completed } : task,

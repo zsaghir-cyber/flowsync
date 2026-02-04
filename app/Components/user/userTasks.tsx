@@ -1,23 +1,18 @@
-import React, { useState, useRef, useEffect, use } from "react";
-
-import { Typography, IconButton, Box, TextField } from "@mui/material";
+"use client";
+import React, { useState, useEffect } from "react"; // Removed useRef, use
+import { Box } from "@mui/material"; // Removed Typography, IconButton, TextField
 import DeleteIcon from "@mui/icons-material/Delete";
-import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import {
   doc,
-  setDoc,
-  getDoc,
-  addDoc,
-  onSnapshot,
   collection,
   deleteDoc,
   updateDoc,
+  onSnapshot,
+  addDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { blue } from "@mui/material/colors";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -25,6 +20,7 @@ import {
   Input,
   Button,
 } from "pixel-retroui";
+
 type Task = {
   id: string;
   title: string;
@@ -33,17 +29,11 @@ type Task = {
 
 const UserTasks = () => {
   const { user } = useAuth();
-
   const [taskList, setTaskList] = useState<Task[]>([]);
   const [taskInput, setTaskInput] = useState("");
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleToggle = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
-  };
-
-  const open = Boolean(anchorEl);
-  const id = open ? "task-popper" : undefined;
+  // REMOVED: anchorEl, handleToggle, open, and id
+  // These were for MUI Popper, but you are using Retroui Dropdown.
 
   useEffect(() => {
     if (!user) return;
@@ -53,13 +43,13 @@ const UserTasks = () => {
       querySnapshot.forEach((doc) => {
         tasks.push({ id: doc.id, ...(doc.data() as Omit<Task, "id">) });
       });
-      console.log("tasklist", tasks);
       setTaskList(tasks);
     });
     return () => unsub();
   }, [user]);
+
   const addTask = async () => {
-    if (taskInput && taskInput !== "") {
+    if (taskInput && taskInput.trim() !== "") {
       const title = taskInput;
       if (!user) return;
       const taskRef = collection(db, "users", user.uid, "tasklist");
@@ -67,6 +57,7 @@ const UserTasks = () => {
       setTaskInput("");
     }
   };
+
   const deleteTask = async (id: string) => {
     if (!user) return;
     const taskRef = doc(db, "users", user.uid, "tasklist", id);
@@ -81,7 +72,7 @@ const UserTasks = () => {
 
   return (
     <Box className="flex flex-col items-center mt-4">
-      <div className="flex  items-center gap-2">
+      <div className="flex items-center gap-2">
         <Input
           bg="white"
           textColor="black"
