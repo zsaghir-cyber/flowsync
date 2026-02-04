@@ -58,7 +58,7 @@ const Tasks = () => {
   };
   const completedTask = (taskId: number) => {
     const updatedTaskList = taskList.map((task) =>
-      task.id === taskId ? { ...task, completed: !task.completed } : task
+      task.id === taskId ? { ...task, completed: !task.completed } : task,
     );
     setTaskList(updatedTaskList);
   };
